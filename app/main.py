@@ -35,10 +35,9 @@ async def send_meta_event(pixel_id, event_name, user_data, custom_data):
 async def track_lead(partner_slug: str, request: Request):
     partner = await app.database.partners.find_one({"slug": partner_slug})
     if not partner: raise HTTPException(status_code=404)
-    
     user_data = {"em": hash_data("lead@test.com"), "client_ip_address": request.client.host, "client_user_agent": request.headers.get("user-agent")}
     await send_meta_event(partner["pixel_id"], "Lead", user_data, {})
-    return templates.TemplateResponse("index.html", {"request": request, "pixel_id": partner["pixel_id"], "partner_name": partner["name"]})
+    return templates.TemplateResponse("index.html", {"request": request, "pixel_id": partner["pixel_id"], "partner_name": partner["name"], "telegram_link": partner.get("telegram_link", "https://google.com")})
 
 @app.post("/webhook/telegram")
 async def telegram_webhook(request: Request):
