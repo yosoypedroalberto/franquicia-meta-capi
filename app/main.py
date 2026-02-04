@@ -1,1 +1,1 @@
-<AQUÍ VA EL NUEVO CÓDIGO PROPORCIONADO POR EL USUARIO>
+Fix: Update main.py to pass full context variables
