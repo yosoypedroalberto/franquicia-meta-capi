@@ -22,7 +22,7 @@ app = FastAPI(title=settings.PROJECT_NAME, lifespan=lifespan)
 def hash_data(data):
     if not data:
         return None
-    return hashlib.sha256(data.strip().lower().encode('utf-8')).hexdigest()
+    return hashlib.sha256(data.strip().lower().encode("utf-8")).hexdigest()
 
 async def send_meta_event(pixel_id, event_name, user_data, custom_data):
     url = f"https://graph.facebook.com/v18.0/{pixel_id}/events"
