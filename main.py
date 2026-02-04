@@ -1,5 +1,4 @@
-# Código funcional V7.0 ajustado para templates
-
+# FastAPI backend for franquicia-meta-capi
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -9,7 +8,7 @@ import uvicorn
 
 app = FastAPI()
 
-# Configuración de CORS (opcional, puedes ajustar los orígenes permitidos)
+# CORS configuration
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -18,14 +17,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Montar archivos estáticos (si tienes una carpeta 'static')
+# Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Configuración de templates (asegúrate de tener la carpeta 'templates')
+# Templates configuration
 templates = Jinja2Templates(directory="templates")
 
 @app.get("/", response_class=HTMLResponse)
-def read_root(request: Request):
+def root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
 @app.get("/pedro", response_class=HTMLResponse)
@@ -34,11 +33,10 @@ def pedro(request: Request):
 
 @app.post("/procesar_formulario", response_class=HTMLResponse)
 def procesar_formulario(request: Request, nombre: str = Form(...), edad: int = Form(...)):
-    # Aquí puedes procesar los datos del formulario
     mensaje = f"¡Hola, {nombre}! Tienes {edad} años."
     return templates.TemplateResponse("resultado.html", {"request": request, "mensaje": mensaje})
 
-# Puedes agregar más rutas según tus necesidades
+# Add more routes as needed
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
