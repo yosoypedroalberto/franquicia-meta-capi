@@ -1,44 +1,38 @@
-# main.py (Template V7.0 context passing example)
+# main.py (Template V7.0 context passing)
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
+from pymongo import MongoClient
 import os
 
 app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+MONGO_URI = os.environ.get("MONGO_URI")
+client = MongoClient(MONGO_URI)
+db = client["franquicia_db"]
+partners_collection = db["partners"]
 
 @app.get("/", response_class=HTMLResponse)
-async def read_root(request: Request):
-    partner_name = os.getenv("PARTNER_NAME", "")
-    pixel_id = os.getenv("PIXEL_ID", "")
-    telegram_link = os.getenv("TELEGRAM_LINK", "")
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "partner_name": partner_name,
-            "pixel_id": pixel_id,
-            "telegram_link": telegram_link
-        }
-    )
+async def read_root(request: Request, partner: str = None):
+    partner_data = None
+    if partner:
+        partner_data = partners_collection.find_one({"name": partner})
+    context = {
+        "request": request,
+        "partner_name": partner_data["name"] if partner_data else None,
+        "pixel_id": partner_data["pixel_id"] if partner_data else None,
+        "telegram_link": partner_data["telegram_link"] if partner_data else None,
+    }
+    return templates.TemplateResponse("index.html", context)
 
 @app.post("/", response_class=HTMLResponse)
-async def submit_form(request: Request, name: str = Form(...), phone: str = Form(...)):
-    partner_name = os.getenv("PARTNER_NAME", "")
-    pixel_id = os.getenv("PIXEL_ID", "")
-    telegram_link = os.getenv("TELEGRAM_LINK", "")
-    # Aquí puedes agregar lógica para manejar el formulario
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "partner_name": partner_name,
-            "pixel_id": pixel_id,
-            "telegram_link": telegram_link,
-            "form_submitted": True,
-            "name": name,
-            "phone": phone
-        }
-    )
+async def submit_form(request: Request, partner: str = Form(...)):
+    partner_data = partners_collection.find_one({"name": partner})
+    context = {
+        "request": request,
+        "partner_name": partner_data["name"] if partner_data else None,
+        "pixel_id": partner_data["pixel_id"] if partner_data else None,
+        "telegram_link": partner_data["telegram_link"] if partner_data else None,
+    }
+    return templates.TemplateResponse("index.html", context)
