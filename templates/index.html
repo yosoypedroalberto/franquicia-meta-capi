@@ -1,1 +1,52 @@
-{{PLANTILLA_V7_0}}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flujo de Efectivo</title>
+    <script>
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init', '{{ pixel_id }}'); fbq('track', 'PageView');
+    </script>
+    <style>
+        body { background: #000; color: #fff; font-family: -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; text-align: center; }
+        .container { max-width: 400px; padding: 20px; }
+        .profile-img { width: 120px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h1 { font-size: 24px; letter-spacing: 1px; margin-bottom: 10px; }
+        p { color: #888; margin-bottom: 35px; }
+        .btn { display: block; width: 100%; padding: 20px; margin: 12px 0; border: 2px solid #fff; border-radius: 50px; background: transparent; color: #fff; font-size: 16px; font-weight: bold; text-decoration: none; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #fff; color: #000; }
+        .loading-state { opacity: 0.5; pointer-events: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="https://flujo-efectivo.carrd.co/assets/images/image01.jpg?v=e6256e67" class="profile-img">
+        <h1>💵 FLUJO DE EFECTIVO</h1>
+        <p>Sistema de Capitalización Meta</p>
+        <button onclick="enviar(this)" class="btn">ACCESO 🔐</button>
+        <button onclick="enviar(this)" class="btn">COMENZAR 💰</button>
+    </div>
+    <script>
+        async function enviar(btn) {
+            btn.innerHTML = "PROCESANDO..."; 
+            btn.classList.add('loading-state');
+            fbq('track', 'Lead');
+            const getCookie = (n) => document.cookie.match('(^|;)\\s*' + n + '\\s*=\\s*([^;]+)')?.pop();
+            const payload = { fbp: getCookie('_fbp') || null, fbc: getCookie('_fbc') || null };
+            try {
+                const response = await fetch('/track/{{ slug }}', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                window.location.href = data.redirect;
+            } catch (e) {
+                window.location.href = "https://t.me/Flujo_Efectivo_Real_bot?start=lead_{{ slug }}";
+            }
+        }
+    </script>
+</body>
+</html>
