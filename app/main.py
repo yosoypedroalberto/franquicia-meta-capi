@@ -9,7 +9,7 @@ import requests, time, hashlib, uvicorn
 templates = Jinja2Templates(directory="app/templates")
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+def lifespan(app: FastAPI):
     app.mongodb_client = AsyncIOMotorClient(settings.MONGODB_URL)
     app.database = app.mongodb_client.get_database("franquicia_db")
     print(f"🚀 SISTEMA NUBE INICIADO: {settings.PROJECT_NAME}")
