@@ -1,3 +1,4 @@
+# Nuevo código para main.py
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
@@ -51,15 +52,14 @@ async def track_lead(partner_slug: str, request: Request):
         "client_user_agent": request.headers.get("user-agent")
     }
     await send_meta_event(partner["pixel_id"], "Lead", user_data, {})
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "pixel_id": partner["pixel_id"],
-            "partner_name": partner["name"],
-            "telegram_link": partner.get("telegram_link", "https://google.com")
-        }
-    )
+    # Construcción explícita del contexto
+    context = {
+        "request": request,
+        "pixel_id": partner["pixel_id"],
+        "partner_name": partner["name"],
+        "telegram_link": partner.get("telegram_link", "https://google.com")
+    }
+    return templates.TemplateResponse("index.html", context)
 
 @app.post("/webhook/telegram")
 async def telegram_webhook(request: Request):
